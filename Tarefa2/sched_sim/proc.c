@@ -44,14 +44,14 @@ void * process_thread(void * procp)
         printf("unable to handle siguser2\n");
 
     // Variável para simular o tempo de processamento do processo
-    int process_time, process_time_tmp;
+    int process_time_tmp;
 
     // Recebendo o ponteiro da estrutura (PCB) do processo
     struct proc * p = (struct proc *)procp;
 
     // O processo está inciando
     printf("%s PROC - Iniciando processo: %d [%d u.t.]\n", 
-           event(), p->pid, p->process_time);
+           event(), p->pid, p->process_time_total);
 
     // A thread do processo inicia em pausa, 
     // para simular a espera na fila de aptos (ready)
@@ -75,18 +75,21 @@ void * process_thread(void * procp)
         process_time_tmp = make_process_time(p);
 
         // O tempo de processamento (a cada execução) não pode ser maior que o QUANTUM
-        process_time = MIN(process_time_tmp, QUANTUM);
+        p->process_time = MIN(process_time_tmp, QUANTUM);
+
+        // O tempo de processamento (a cada execução) não pode ser maior que o remaining_time
+        p->process_time = MIN(p->process_time, p->remaining_time);
         
         // Diminuindo o tempo que o processo ainda precisa
-        p->remaining_time = p->remaining_time - process_time;
+        p->remaining_time = p->remaining_time - p->process_time;
 
         printf("%s PROC - Processo %d processando por %d u.t. [%d/%d]\n", 
-               event(), p->pid, process_time, p->remaining_time, p->process_time);
+               event(), p->pid, p->process_time, p->remaining_time, p->process_time_total);
         
         // Simulando o tempo de processamento (ocupação da CPU) através 
         // de um sleep de microsegundos
         // usleep(2000*process_time);
-        usleep(process_time);
+        usleep(p->process_time);
 
         // Verificando se o processo fará E/S ou se irá usar todo o valor do QUANTUM
         if (process_time_tmp >= QUANTUM)
@@ -169,8 +172,9 @@ struct proc * createproc()
     p->turnaround_time = 0;
     p->waiting_time = 0;
     p->blocked_time = 0;
-    p->process_time = make_time_max(); // int value
-    p->remaining_time = p->process_time;
+    p->process_time = 0; // int value
+    p->process_time_total = make_time_max(); // int value
+    p->remaining_time = p->process_time_total;
 
     // estatísticas
     p->num_ready = 0;
@@ -205,6 +209,7 @@ void printproc(struct proc *p)
     printf("\t| queue: %d\n", p->queue);
     printf("\t| time_start: %f\n", convert_time(p->time_start));
     printf("\t| process_time: %d\n", p->process_time);
+    printf("\t| process_time_total: %d\n", p->process_time_total);
     printf("\t| remaining_time: %d\n", p->remaining_time);
     printf("\t| waiting_time: %d\n", p->waiting_time);
     printf("\t| blocked_time: %d\n", p->blocked_time);

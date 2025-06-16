@@ -1,8 +1,10 @@
 #!/bin/bash
 
+# Permitir: chmod +x script.sh
+
 # Uso: ./script.sh nome_do_executavel
-# chmod +x script.sh
 # Exemplo: ./script.sh main_ljf
+
 # Para salvar a saída:
 # ./scriptljf.sh main_ljf > resultados_ljf.txt
 

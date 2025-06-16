@@ -36,7 +36,7 @@ struct proc * scheduler(struct proc * current)
             case BLOCKED:
                 // Saiu por E/S -> volta para fila de alta prioridade
                 current->queue = 0;
-                enqueue(ready, current);
+                enqueue(blocked, current);
                 count_blocked_in(current);
                 break;
 

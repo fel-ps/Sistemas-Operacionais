@@ -26,7 +26,8 @@ struct proc
     int turnaround_time;        // Tempo total de execução do processo
     int waiting_time;           // Tempo que ficou na fila de aptos
     int blocked_time;           // Tempo que ficou na fila de bloqueados
-    int process_time;           // Tempo de processamento que o processo precisa
+    int process_time;           // Tempo de processamento que o processo recebe por rodada
+    int process_time_total;     // Tempo de processamento que o processo precisa
     int remaining_time;         // Tempo de processamento restante do processo
 
     // estatisticas
@@ -39,15 +40,6 @@ struct proc
     // ponteiro para alocação na fila
     struct proc *prev;
     struct proc *next;
-
-    // ADIÇÃO FEITA PELO GRUPO (Bruno Costa Souto e Felipe Augusto Araújo da Cunha):
-    // A variável 'quantum_used' foi adicionada para armazenar o tempo de CPU utilizado
-    // por um processo durante seu último quantum de execução.
-    // Ela é usada pelo escalonador PRIO DYNAMIC QUANTUM para decidir em qual fila
-    // (ready ou ready2) o processo deve ser inserido após sair da CPU, conforme a regra:
-    // - Se quantum_used > 50% do QUANTUM → volta para ready (fila 1)
-    // - Caso contrário → volta para ready2 (fila 2)
-    int quantum_used;
 };
 
 void * process_thread(void *);
