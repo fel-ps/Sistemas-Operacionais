@@ -18,4 +18,4 @@ Para executar o simulador:
 ./simulador trace1.trace 64 fifo
 ```
 
-
+<!-- Os traces precisam estar na raiz do diretório -->
